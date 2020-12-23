@@ -36,7 +36,7 @@ spec:
     spec:
       containers:
       - name: my-app
-        image: modugulakrishna99/bluegreendemo:1.0
+        image: modugulakrishna99/bluegreendemo
         ports:
         - name: http
           containerPort: 8080
