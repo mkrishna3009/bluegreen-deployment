@@ -1,58 +1,39 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: my-app
-  labels:
-    app: my-app
-spec:
-  type: NodePort
-  ports:
-  - name: http
-    port: 80
-    targetPort: http
-
-  # Note here that we match both the app and the version
-  selector:
-    app: my-app
-    version: v1.0.0
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-app-v1
-  labels:
-    app: my-app
+  name: hello-blue-whale
 spec:
-  replicas: 3
+  replicas: 5
   selector:
     matchLabels:
-      app: my-app
-      version: v1.0.0
+      app: hello-whale-app
+      version: blue
   template:
     metadata:
+      name: hello-blue-whale-pod
       labels:
-        app: my-app
-        version: v1.0.0
+        app: hello-whale-app
+        version: blue
     spec:
       containers:
-      - name: my-app
-        image: modugulakrishna99/bluegreendemo
+      - name: hello-whale-container
+        image: modugulakrishna99/blue:v1
+        imagePullPolicy: Always
         ports:
-        - name: http
-          containerPort: 8080
-        - name: probe
-          containerPort: 8086
-        env:
-        - name: VERSION
-          value: v1.0.0
-        livenessProbe:
-          httpGet:
-            path: /live
-            port: probe
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: probe
-          periodSeconds: 5
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-whale-svc
+  labels:
+    app: hello-whale-app
+spec:
+  selector:
+    app: hello-whale-app
+    version: blue
+  type: NodePort
+  ports:
+  - nodePort: 31113
+    port: 80
+    targetPort: 80
